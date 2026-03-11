@@ -301,6 +301,44 @@ skills/force-tool-first/
 | 安装软件 | `winget install <包名> --accept-source-agreements --accept-package-agreements` |
 | 刷新 PATH | `$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")` |
 
+### 🌐 PinchTab 浏览器自动化（AI 专用）
+
+**版本**：0.7.8 | **端口**：9867 | **Stars**：6,474
+
+PinchTab 是给 AI Agent 使用的浏览器控制工具，Token 消耗比截图便宜 5-13x。
+
+| 场景 | 命令 |
+|------|------|
+| 启动服务 | `pinchtab` |
+| 导航到 URL | `pinchtab nav https://example.com` |
+| 获取页面结构 | `pinchtab snap -i -c` |
+| 点击元素 | `pinchtab click e5` |
+| 提取文本 | `pinchtab text` |
+| 查看帮助 | `pinchtab --help` |
+
+**HTTP API**（端口 9867）：
+```bash
+# 创建实例
+curl -X POST http://localhost:9867/instances/launch -d '{"name":"work","mode":"headless"}'
+
+# 打开标签
+curl -X POST http://localhost:9867/instances/<INST>/tabs/open -d '{"url":"https://..."}'
+
+# 获取快照
+curl "http://localhost:9867/tabs/<TAB>/snapshot?filter=interactive"
+
+# 点击元素
+curl -X POST http://localhost:9867/tabs/<TAB>/action -d '{"kind":"click","ref":"e5"}'
+```
+
+**何时使用**：
+- 需要浏览器自动化（导航、点击、截图、提取文本）
+- 需要高效 Token 消耗（文本提取 > 截图）
+- 需要多实例浏览器管理
+- 用户提到"浏览器自动化"、"控制 Chrome"
+
+---
+
 ### 💎 Obsidian CLI 常用命令
 
 **⚠️ 重要：所有 Obsidian 操作必须通过 obsidian-cli 完成，禁止直接修改文件！**

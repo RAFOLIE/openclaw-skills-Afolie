@@ -1,8 +1,8 @@
 # OpenClaw Skills - Afolie
 
-OpenClaw 技能备份仓库
+OpenClaw 自定义技能备份仓库
 
-## 技能列表
+## 📦 技能列表
 
 ### 1. force-tool-first 🔧
 
@@ -16,22 +16,7 @@ OpenClaw 技能备份仓库
 - Windows 平台适配（PowerShell 命令）
 - 软件安装支持（winget、环境变量刷新）
 - pty 交互式命令处理
-- **必须使用专用 CLI**（Obsidian → obsidian-cli，GitHub → gh）
-
-**触发场景**:
-- Git & GitHub 操作
-- 软件安装
-- 环境检查
-- 系统状态
-- 文件操作
-- Obsidian 笔记
-
-**示例库**:
-- `git-status-check.md` - Git 仓库状态
-- `github-cli-list-repos.md` - GitHub 远程仓库
-- `software-install-winget.md` - 软件安装
-- `gateway-health-check.md` - 服务状态检查
-- `file-list.md` - 文件列表查看
+- **必须使用专用 CLI**（Obsidian → obsidian-cli，GitHub → gh，浏览器 → pinchtab）
 
 ### 2. obsidian-cli 💎
 
@@ -39,51 +24,88 @@ OpenClaw 技能备份仓库
 
 Obsidian 笔记操作技能 - 必须通过 obsidian-cli 完成。
 
-**核心原则**: 所有 Obsidian 笔记操作必须使用 obsidian-cli，禁止直接修改文件。
-
 **功能**:
 - 搜索笔记（按名称或内容）
 - 创建笔记
 - 移动/重命名笔记（自动更新链接）
 - 删除笔记
 
-**为什么必须用 CLI**:
-- 自动更新 `[[wikilinks]]` 链接
-- 保持 Obsidian 元数据完整
-- 触发插件和同步
-- 维护笔记关系图
+### 3. pinchtab 🌐
 
-## 安装方法
+**版本**: 1.0 | **Stars**: 6,474
 
-将技能文件夹复制到 OpenClaw skills 目录：
+高性能浏览器自动化工具，给 AI Agent 使用的浏览器控制。
+
+**功能**:
+- 浏览器自动化（导航、点击、截图、提取文本）
+- Token 高效（文本提取比截图便宜 5-13x）
+- 多实例浏览器管理
+- HTTP API (端口 9867)
+
+**快速命令**:
+```bash
+pinchtab                    # 启动服务
+pinchtab nav <url>          # 导航
+pinchtab snap -i -c         # 获取页面结构
+pinchtab click <ref>        # 点击元素
+pinchtab text               # 提取文本
+```
+
+### 4. skill-creator 🎨
+
+创建、修改和优化 OpenClaw 技能。
+
+**功能**:
+- 创建新技能
+- 修改现有技能
+- 测试技能性能
+- 优化技能描述
+
+### 5. skill-vetter 🔒
+
+**版本**: 1.0
+
+安全审查技能 - 在安装任何技能前先检查安全性。
+
+**功能**:
+- 源头检查（作者、下载量、更新时间）
+- 代码审查（检测恶意代码）
+- 权限评估（文件、网络、命令）
+- 风险分级（LOW/MEDIUM/HIGH/EXTREME）
+
+**口诀**: *Paranoia is a feature.* 🔒
+
+---
+
+## 📥 安装方法
+
+将技能文件夹复制到 OpenClaw workspace 目录：
 
 ```bash
 # Windows
-cp -r force-tool-first "$env:APPDATA\npm\node_modules\openclaw\skills\"
-cp -r obsidian-cli "$env:APPDATA\npm\node_modules\openclaw\skills\"
+cp -r * "$env:USERPROFILE\.openclaw\workspace\skills\"
 
 # macOS/Linux
-cp -r force-tool-first ~/.openclaw/skills/
-cp -r obsidian-cli ~/.openclaw/skills/
+cp -r * ~/.openclaw/workspace/skills/
 ```
 
-## 依赖工具
+## 🔧 依赖工具
 
-- `gh` (GitHub CLI) - 用于 GitHub 操作
-- `obsidian-cli` - 用于 Obsidian 笔记操作
-- `winget` (Windows) - 用于软件安装
+| 工具 | 用途 |
+|------|------|
+| `gh` | GitHub CLI 操作 |
+| `obsidian-cli` | Obsidian 笔记操作 |
+| `pinchtab` | 浏览器自动化 |
 
-## 版本历史
+## 📝 版本历史
 
-- **v1.5** (2026-03-11) - 添加必须使用专用 CLI 的铁律
-- **v1.4** (2026-03-11) - 添加 Obsidian CLI 支持
-- **v1.3** (2026-03-11) - 添加 GitHub 克隆确认流程
-- **v1.0** (2026-03-11) - 初始版本
+- **2026-03-11** - 添加 pinchtab、skill-creator、skill-vetter
+- **2026-03-11** - 创建仓库，上传 force-tool-first v1.5 + obsidian-cli v1.0
 
-## 作者
+## 👤 作者
 
 小企鹅 🐧
 
-## License
+## 📄 License
 
 MIT
