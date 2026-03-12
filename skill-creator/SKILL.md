@@ -1,5 +1,6 @@
 ---
 name: skill-creator
+version: 1.1
 description: Create new skills, modify and improve existing skills, and measure skill performance. Use when users want to create a skill from scratch, update or optimize an existing skill, run evals to test a skill, benchmark skill performance with variance analysis, or optimize a skill's description for better triggering accuracy.
 ---
 
@@ -47,6 +48,65 @@ It's OK to briefly explain terms if you're in doubt, and feel free to clarify te
 ### Capture Intent
 
 Start by understanding the user's intent. The current conversation might already contain a workflow the user wants to capture (e.g., they say "turn this into a skill"). If so, extract answers from the conversation history first — the tools used, the sequence of steps, corrections the user made, input/output formats observed. The user may need to fill the gaps, and should confirm before proceeding to the next step.
+
+**🔍 从对话历史创建技能（From Conversation History）**
+
+当用户说类似以下内容时：
+- "把这个工作流变成技能"
+- "从我们的对话创建一个技能"
+- "把这些步骤记录成技能"
+- "创建一个技能来捕获这个过程"
+
+**步骤**：
+1. **识别关键轮次**：找出对话中体现工作流的几轮交互（通常 3-10 轮）
+2. **提取工具调用**：
+   - 使用的工具名称（如 `exec`, `read`, `write`）
+   - 工具参数和配置
+   - 执行顺序
+3. **识别用户偏好**：
+   - 用户的明确指示（如"不要关浏览器"）
+   - 用户偏好（如"优先使用热门"）
+   - 纠正和反馈
+4. **提取环境信息**：
+   - 操作系统（Windows/Linux/macOS）
+   - 路径和配置
+   - 依赖项
+5. **确定触发条件**：
+   - 什么情况下应该使用这个技能？
+   - 用户的典型短语是什么？
+   - 上下文特征？
+
+**示例提取格式**：
+```markdown
+## 从对话提取的技能草稿
+
+### 工作流步骤
+1. 启动 PinchTab 服务（Windows 环境）
+   - 工具：`exec`
+   - 命令：`node "$env:APPDATA\npm\node_modules\pinchtab\bin\pinchtab" --port 9867`
+   - 参数：`background: true, timeout: 600`
+
+2. 创建浏览器实例
+   - 工具：`Invoke-RestMethod`
+   - URL：`http://localhost:9867/instances/launch`
+   - 参数：`{name:'twitter', mode:'headed'}`
+
+3. 打开目标网页
+   - URL：用户指定
+   - 注意：使用热门搜索（f=top）而非最新
+
+### 用户偏好
+- 保持浏览器打开（不要自动关闭）
+- Twitter 查看使用"热门"而非"最新"
+- 服务异常时自动重启
+
+### 环境信息
+- OS: Windows
+- 服务端口：9867
+- Profile: twitter (prof_7352f353)
+```
+
+### 标准问题（适用于所有技能）
 
 1. What should this skill enable Claude to do?
 2. When should this skill trigger? (what user phrases/contexts)

@@ -14,7 +14,7 @@ description: |
   **自学习机制**：成功解决的问题会自动记录到 `examples/` 目录，
   下次遇到类似问题优先参考已验证的解决方案。
 
-version: 1.5
+version: 1.6
 user-invocable: true
 metadata:
   openclaw:
@@ -47,7 +47,17 @@ metadata:
      - Obsidian：保持链接完整、触发插件、维护关系图
      - GitHub：认证正确、API 规范、避免限流
 
-4. **平台适配**
+4. **🌐 浏览器使用优先级**
+   - **上网/网页操作**：优先使用 **PinchTab**（token 高效，文本提取）
+   - **何时用 OpenClaw browser**：需要截图、复杂交互、或 PinchTab 不可用时
+   - **PinchTab 配置**：`~/.openclaw/workspace/skills/pinchtab/SKILL.md`
+   - **服务地址**：http://localhost:9867
+   - **优势**：
+     - Token 消耗比截图便宜 5-13x
+     - 原生多实例和 profile 隔离
+     - 更适合自动化任务
+
+5. **平台适配**
    - Windows: 优先使用 PowerShell 语法
    - 注意路径分隔符（`\` vs `/`）
    - Windows 包管理器：`winget`、`choco`、`scoop`
@@ -91,6 +101,36 @@ choco install <包名> -y
 
 # 使用 scoop 安装
 scoop install <包名>
+```
+
+### 🌐 PinchTab 服务管理（Windows）
+
+**⚠️ PinchTab 服务稳定性问题**：
+- 服务可能意外退出（进程 code=1）
+- 需要更健壮的重启机制
+
+**推荐做法**：
+1. **使用长时间 timeout**：600-900 秒
+2. **操作前检查服务**：
+   ```powershell
+   if (-not (Test-NetConnection localhost 9867 -InformationLevel Quiet)) {
+       # 重启服务
+       node "$env:APPDATA\npm\node_modules\pinchtab\bin\pinchtab" --port 9867
+       Start-Sleep -Seconds 5
+   }
+   ```
+3. **不要自动关闭浏览器**（用户可能正在登录）
+4. **Twitter 查看使用"热门"**（`f=top`）而非"最新"
+
+**服务启动示例**：
+```powershell
+# 后台启动服务（长时间运行）
+node "$env:APPDATA\npm\node_modules\pinchtab\bin\pinchtab" --port 9867
+# 参数：background=true, timeout=900
+
+# 创建实例
+$body = @{name='twitter'; mode='headed'} | ConvertTo-Json
+Invoke-RestMethod -Uri 'http://localhost:9867/instances/launch' -Method POST -Body $body -ContentType 'application/json'
 ```
 
 ### 📥 GitHub 仓库克隆默认路径
