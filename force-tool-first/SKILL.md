@@ -47,15 +47,9 @@ metadata:
      - Obsidian：保持链接完整、触发插件、维护关系图
      - GitHub：认证正确、API 规范、避免限流
 
-4. **🌐 浏览器使用优先级**
-   - **上网/网页操作**：优先使用 **PinchTab**（token 高效，文本提取）
-   - **何时用 OpenClaw browser**：需要截图、复杂交互、或 PinchTab 不可用时
-   - **PinchTab 配置**：`~/.openclaw/workspace/skills/pinchtab/SKILL.md`
-   - **服务地址**：http://localhost:9867
-   - **优势**：
-     - Token 消耗比截图便宜 5-13x
-     - 原生多实例和 profile 隔离
-     - 更适合自动化任务
+4. **🌐 浏览器使用**
+   - **上网/网页操作**：使用内置 **browser** 工具（`target=host`）
+   - **PinchTab 已于 2026-03-13 卸载**（Windows 上实例管理不稳定）
 
 5. **平台适配**
    - Windows: 优先使用 PowerShell 语法

@@ -6,7 +6,7 @@ OpenClaw 自定义技能备份仓库
 
 ### 1. force-tool-first 🔧
 
-**版本**: 1.5
+**版本**: 1.6
 
 强制优先调用本地工具检查环境的技能（支持自学习优化）。
 
@@ -16,13 +16,13 @@ OpenClaw 自定义技能备份仓库
 - Windows 平台适配（PowerShell 命令）
 - 软件安装支持（winget、环境变量刷新）
 - pty 交互式命令处理
-- **必须使用专用 CLI**（Obsidian → obsidian-cli，GitHub → gh，浏览器 → pinchtab）
+- **浏览器操作使用内置 browser 工具**
 
 ### 2. obsidian-cli 💎
 
 **版本**: 1.0
 
-Obsidian 笔记操作技能 - 必须通过 obsidian-cli 完成。
+Obsidian 笔记操作技能 - 必须通过 obsidian 命令完成。
 
 **功能**:
 - 搜索笔记（按名称或内容）
@@ -30,38 +30,20 @@ Obsidian 笔记操作技能 - 必须通过 obsidian-cli 完成。
 - 移动/重命名笔记（自动更新链接）
 - 删除笔记
 
-### 3. pinchtab 🌐
+### 3. skill-creator 🎨
 
-**版本**: 1.0 | **Stars**: 6,474
-
-高性能浏览器自动化工具，给 AI Agent 使用的浏览器控制。
-
-**功能**:
-- 浏览器自动化（导航、点击、截图、提取文本）
-- Token 高效（文本提取比截图便宜 5-13x）
-- 多实例浏览器管理
-- HTTP API (端口 9867)
-
-**快速命令**:
-```bash
-pinchtab                    # 启动服务
-pinchtab nav <url>          # 导航
-pinchtab snap -i -c         # 获取页面结构
-pinchtab click <ref>        # 点击元素
-pinchtab text               # 提取文本
-```
-
-### 4. skill-creator 🎨
+**版本**: 1.1
 
 创建、修改和优化 OpenClaw 技能。
 
 **功能**:
 - 创建新技能
 - 修改现有技能
+- 从对话历史提取工作流创建技能
 - 测试技能性能
 - 优化技能描述
 
-### 5. skill-vetter 🔒
+### 4. skill-vetter 🔒
 
 **版本**: 1.0
 
@@ -74,6 +56,19 @@ pinchtab text               # 提取文本
 - 风险分级（LOW/MEDIUM/HIGH/EXTREME）
 
 **口诀**: *Paranoia is a feature.* 🔒
+
+### 5. twitter-trending 🐦
+
+**版本**: 1.1
+
+Twitter/X 热门推文搜索与深度解读技能。
+
+**功能**:
+- 搜索 Twitter/X 热门推文
+- 提取并结构化展示推文内容
+- 中文深度解读
+- OpenClaw 开源项目偏好（插件、技能、GitHub 项目）
+- 自动过滤金融/虚拟货币相关内容
 
 ---
 
@@ -94,11 +89,13 @@ cp -r * ~/.openclaw/workspace/skills/
 | 工具 | 用途 |
 |------|------|
 | `gh` | GitHub CLI 操作 |
-| `obsidian-cli` | Obsidian 笔记操作 |
-| `pinchtab` | 浏览器自动化 |
+| `obsidian` | Obsidian 笔记操作（CLI） |
+| `browser` | OpenClaw 内置浏览器工具 |
 
 ## 📝 版本历史
 
+- **2026-03-13** - 新增 twitter-trending v1.1；删除 pinchtab（已卸载）；更新 force-tool-first v1.6
+- **2026-03-12** - 新增 skill-creator v1.1（支持从对话历史创建）、skill-vetter v1.0；更新 force-tool-first v1.6
 - **2026-03-11** - 添加 pinchtab、skill-creator、skill-vetter
 - **2026-03-11** - 创建仓库，上传 force-tool-first v1.5 + obsidian-cli v1.0
 
