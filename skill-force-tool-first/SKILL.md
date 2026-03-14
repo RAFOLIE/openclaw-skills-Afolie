@@ -1,4 +1,4 @@
----
+﻿---
 name: force-tool-first
 description: |
   强制优先调用本地工具检查环境的技能（支持自学习优化）。
@@ -22,7 +22,7 @@ metadata:
     priority: high
     force-tool-first: true
     self-improving: true
-    examples-dir: "skills/force-tool-first/examples"
+    examples-dir: "skills/skill-force-tool-first/examples"
 ---
 
 # Force Tool First - 工具优先法则（自学习版）
@@ -213,7 +213,7 @@ git clone https://github.com/<用户名>/<仓库名>.git "$githubPath\<仓库名
 ### 示例库结构
 
 ```
-skills/force-tool-first/
+skills/skill-force-tool-first/
 ├── SKILL.md
 ├── examples/
 │   ├── git-status-check.md

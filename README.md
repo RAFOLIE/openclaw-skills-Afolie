@@ -85,6 +85,8 @@ cp -r * "$env:USERPROFILE\.openclaw\workspace\skills\"
 cp -r * ~/.openclaw/workspace/skills/
 ```
 
+**注意**：技能文件夹以 `skill-` 前缀命名，安装后保留前缀即可。
+
 ## 🔧 依赖工具
 
 | 工具 | 用途 |
