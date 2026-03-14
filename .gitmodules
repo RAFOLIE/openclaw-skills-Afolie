@@ -1,0 +1,15 @@
+[submodule "skill-twitter-trending"]
+	path = skill-twitter-trending
+	url = https://github.com/RAFOLIE/openclaw-skill-twitter-trending.git
+[submodule "skill-force-tool-first"]
+	path = skill-force-tool-first
+	url = https://github.com/RAFOLIE/openclaw-skill-force-tool-first.git
+[submodule "skill-obsidian-cli"]
+	path = skill-obsidian-cli
+	url = https://github.com/RAFOLIE/openclaw-skill-obsidian-cli.git
+[submodule "skill-creator"]
+	path = skill-creator
+	url = https://github.com/RAFOLIE/openclaw-skill-creator.git
+[submodule "skill-vetter"]
+	path = skill-vetter
+	url = https://github.com/RAFOLIE/openclaw-skill-vetter.git

@@ -75,17 +75,36 @@ Twitter/X 推文浏览与深度解读技能。
 
 ## 📥 安装方法
 
-将技能文件夹复制到 OpenClaw workspace 目录：
+### Method 1: 批量下载所有技能（推荐）
 
 ```bash
-# Windows
-cp -r * "$env:USERPROFILE\.openclaw\workspace\skills\"
+# 克隆（含 submodule）
+git clone --recursive https://github.com/RAFOLIE/openclaw-skills-Afolie.git
 
-# macOS/Linux
-cp -r * ~/.openclaw/workspace/skills/
+# 复制到 workspace
+cp -r openclaw-skills-Afolie/skill-* ~/.openclaw/workspace/skills/
 ```
 
-**注意**：技能文件夹以 `skill-` 前缀命名，安装后保留前缀即可。
+### Method 2: 单独安装某个技能
+
+每个技能都有独立仓库，可以单独 clone：
+
+```bash
+git clone https://github.com/RAFOLIE/openclaw-skill-twitter-trending.git
+cp -r openclaw-skill-twitter-trending ~/.openclaw/workspace/skills/
+```
+
+**独立仓库列表**：
+
+| 仓库 | 说明 |
+|------|------|
+| [openclaw-skill-twitter-trending](https://github.com/RAFOLIE/openclaw-skill-twitter-trending) | 🐦 推文浏览与深度解读 |
+| [openclaw-skill-force-tool-first](https://github.com/RAFOLIE/openclaw-skill-force-tool-first) | 🔧 工具优先法则 |
+| [openclaw-skill-obsidian-cli](https://github.com/RAFOLIE/openclaw-skill-obsidian-cli) | 💎 Obsidian 笔记操作 |
+| [openclaw-skill-creator](https://github.com/RAFOLIE/openclaw-skill-creator) | 🎨 技能创建与优化 |
+| [openclaw-skill-vetter](https://github.com/RAFOLIE/openclaw-skill-vetter) | 🔒 技能安全审查 |
+
+> 本仓库通过 Git Submodule 关联各独立仓库，保持双向同步。
 
 ## 🔧 依赖工具
 
