@@ -13,3 +13,6 @@
 [submodule "skill-vetter"]
 	path = skill-vetter
 	url = https://github.com/RAFOLIE/openclaw-skill-vetter.git
+[submodule "skill-diary"]
+	path = skill-diary
+	url = https://github.com/RAFOLIE/openclaw-skill-diary.git
