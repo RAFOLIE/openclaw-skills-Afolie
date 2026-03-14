@@ -1,4 +1,4 @@
----
+﻿---
 name: twitter-trending
 description: |
   Twitter/X 热门推文搜索与深度解读技能。
@@ -12,7 +12,7 @@ description: |
 
   **适用场景**：搜索任意关键词的热门推文，提取并结构化展示，提供中文深度解读。
 
-version: 1.1
+version: 1.5
 metadata:
   openclaw:
     emoji: "🐦"
@@ -25,47 +25,70 @@ metadata:
 
 | 项目 | 说明 |
 |------|------|
-| **用途** | 搜索 Twitter/X 热门推文，提取内容并提供中文深度解读 |
-| **默认工具** | OpenClaw 内置 `browser` 工具（非 PinchTab） |
-| **搜索偏好** | 优先使用"热门"（Top）而非"最新"（Latest） |
+| **用途** | 浏览 Twitter/X 推文，提取内容并提供中文深度解读 |
+| **默认工具** | OpenClaw 内置 `browser` 工具 |
+| **浏览器模式** | `profile="user"`（复用用户已登录的 Chrome） |
+| **默认浏览方式** | 「为你推荐」首页（利用登录态获取个性化推荐） |
+| **搜索方式** | 需要搜索特定关键词时使用 |
+| **关注主题** | openclaw、AI、AI 绘画、AI 编程 |
 | **输出语言** | 中文 |
+
+## 浏览器使用规则
+
+> 详细规则见 [browser-rules.md](browser-rules.md)
+
+### 快速参考
+
+- **默认模式**：`profile="user"`（用户的 Chrome，已登录 Twitter）
+- **X 标签页**：在已有的 X 标签页内操作，**不要新建标签页**
+- **如何找到 X 标签页**：`browser action=tabs profile=user` → 找 `url` 含 `x.com` 的那个 `targetId`
+- **备选方案**：`profile="openclaw"`（隔离浏览器，无登录状态）
+- **Chrome 前提**：需要以 `--remote-debugging-port=9222` 启动
 
 ## 工作流
 
-### 第一步：打开搜索页面
-
-使用 OpenClaw 内置 `browser` 工具（不要用 PinchTab，PinchTab 在 Windows 上有编码问题）。
+### 第一步：找到 X 标签页
 
 ```
-browser action=open targetUrl=https://x.com/search?q={关键词}&f=top target=host
+browser action=tabs profile=user
 ```
 
-- **关键词**：用户指定的话题，默认为 `openclaw`
-- **`f=top`**：使用热门排序（质量更高）
-- 如果用户没有指定关键词，根据上下文推断或询问
+在返回结果中找到 `url` 包含 `x.com` 的标签页，记录其 `targetId`。如果没找到，用 `profile="openclaw"` 作为备选。
 
-### 第二步：等待页面加载
+### 第二步：选择浏览模式
+
+根据用户意图选择：
+
+| 用户请求 | 模式 | 操作 |
+|---------|------|------|
+| "看看推特"、"推特有什么"、"看看 X" | 🏠 **推荐首页** | `navigate targetUrl=https://x.com/home` |
+| "搜索 XXX"、"推特上搜一下 XXX" | 🔍 **关键词搜索** | `navigate targetUrl=https://x.com/search?q={关键词}&f=top` |
+| "最新推文"、"最近在聊啥" | 🕐 **最新** | `navigate targetUrl=https://x.com/search?q={关键词}&f=live` |
+
+**默认行为**：用户没指定关键词时，直接浏览「为你推荐」首页。
+
+### 第三步：等待页面加载
 
 ```
-browser action=act request={"kind":"wait","timeMs":6000} target=host targetId=<tabId>
+browser action=act request={"kind":"wait","timeMs":6000} profile=user targetId=<X标签页ID>
 ```
 
 页面加载需要时间，必须等待。如果第一次加载不完整，可以再等一轮。
 
-### 第三步：获取页面快照
+### 第四步：获取页面快照
 
 ```
-browser action=snapshot compact=true maxChars=15000 target=host targetId=<tabId>
+browser action=snapshot compact=true maxChars=20000 profile=user targetId=<X标签页ID>
 ```
 
-使用 `compact=true` 和 `maxChars=15000` 获取精简快照，避免过多 token 消耗。
+使用 `compact=true` 和 `maxChars=20000` 获取精简快照，避免过多 token 消耗。
 
 **重要**：如果快照内容不完整（推文被截断），可以：
 1. 再次 `act/wait` 等待 3-5 秒
 2. 重新 `snapshot` 获取更多内容
-3. 如果仍不够，滚动页面后再获取
+3. 如果仍不够，滚动页面（`act/press key=End`）后再获取
 
-### 第四步：解析推文数据
+### 第五步：解析推文数据
 
 从快照中提取每条推文的以下信息：
 
@@ -84,94 +107,96 @@ browser action=snapshot compact=true maxChars=15000 target=host targetId=<tabId>
 - `/status/XXXXXXXXXX` 格式的 URL 是推文链接
 - 忽略 `button "Grok 操作"`、`button "更多"`、`button "书签"` 等操作按钮
 
-### 第五步：生成输出
+### 第六步：生成输出
 
 ## 输出格式（严格遵循）
 
-输出分为两部分：**简单列表** + **深度解读**。
+输出分为两部分：**深度解读（固定 10 条）** + **趋势总结**。
 
-### 第一部分：简单列表
+### 深度解读（每条都要有！）
 
 ```
-## 🐦 [关键词] 热门推文 Top N
+## 🐧 [模式标签] 推文深度解读
 
 ---
 
-**1. [发帖人]** (@handle) — [时间]
-> [推文内容摘要，一句话]
-> 🔥 [互动数据格式：X赞 · X转发 · X浏览]
-> 🔗 [推文链接]
-
-**2. ...**
-```
-
-互动数据格式化规则：
-- 小于 1 万：直接显示数字（如 530）
-- 1万以上：用"X.X万"格式（如 39.4万）
-- 特别高的：加火焰 emoji 标注
-
-### 第二部分：深度解读
-
-```
-## 🐧 [关键词] 热门推文深度解读
-
----
-
-### 1. [发帖人] — "[推文标题/核心观点]"
-**🔗** [推文链接]
-**📊** [互动数据]
+### 1. [发帖人]**(@handle)** — [时间]
+> [推文内容摘要，1-2句话]
+> 🔥 [互动数据：X赞 · X转帖 · X浏览]
+> 🔗 https://x.com/handle
 
 **解读**：[2-4句中文解读，分析推文的背景、意义、代表性]
 
 ---
 ```
 
-### 第三部分：趋势总结（可选）
+互动数据格式化规则：
+- 小于 1 万：直接显示数字（如 530）
+- 1万以上：用"X.X万"格式（如 39.4万）
+- 特别高的：加火焰 emoji 标注（🔥🔥🔥🔥以上）
 
-当推文数量 ≥5 条时，在最后添加趋势总结：
+**重要规则**：
+- **固定输出 10 条**，推荐模式如果首页不够就往下滚动加载
+- 每条推文**必须包含推文链接**（`https://x.com/handle` 格式）
+- 每条推文**必须包含互动数据**
+- **所有 10 条都要有深度解读**，不允许偷懒
+- 解读必须是**原创分析**而非简单翻译
+- 链接从推文作者的 handle 推导，或从快照中的链接提取
 
-```
-### 📊 整体趋势总结
+### 趋势总结（必须）
+
+每次输出都在最后添加趋势总结：
 
 | 方向 | 代表推文 | 热度 |
 |------|---------|------|
 | [分类] | [简述] | 🔥~🔥🔥🔥🔥🔥 |
 
 **结论**：[1-2句总结整体趋势]
-```
 
-## 搜索偏好与过滤规则
+## 关注主题与过滤规则
 
-### OpenClaw 相关搜索
+### 默认关注主题
 
-当搜索 OpenClaw 相关推文时（关键词含 openclaw、龙虾等），**默认关注开源项目方向**：
-- ✅ 插件（plugin）
-- ✅ 技能（skill）
-- ✅ GitHub 开源项目
-- ✅ 扩展（extension）
-- ✅ 自定义节点（custom node）
-- ✅ ClawHub 上的技能
-- ✅ 使用教程、配置分享
-- ✅ Agent 应用案例
+用户的 Twitter 账号关注了 AI 相关领域，首页「为你推荐」会自动推送相关内容。重点关注：
 
-### 强制过滤（无论什么关键词）
+| 主题 | 关键词 |
+|------|--------|
+| 🦞 **OpenClaw** | openclaw、龙虾、clawd |
+| 🤖 **AI 通用** | AI、LLM、GPT、大模型、agent |
+| 🎨 **AI 绘画** | AI art、stable diffusion、midjourney、comfyui、SDXL |
+| 💻 **AI 编程** | AI coding、copilot、cursor、coding agent |
+
+### 推荐首页模式 vs 搜索模式
+
+| | 🏠 推荐首页 | 🔍 搜索模式 |
+|---|---|---|
+| **触发** | "看看推特"、"有什么新内容" | "搜一下 XXX"、"XXX 相关推文" |
+| **内容来源** | 算法推荐 + 已关注账号 | 指定关键词匹配 |
+| **优势** | 内容更丰富、不重复、有时效性 | 更精准、聚焦特定话题 |
+| **输出标题** | "🐦 X 推荐推文速览" | "🐦 [关键词] 热门推文" |
+
+### 强制过滤（无论什么模式）
 
 以下内容**必须排除**，不要出现在输出中：
-- ❌ 金融（金融理财、炒股、投资）
+- ❌ **色情/成人内容**（NSFW、porn、onlyfans、裸露、性暗示、色情推广、成人内容账号）
+- ❌ **反动/政治敏感**（政治煽动、极端主义、仇恨言论、暴力煽动、分裂主义、颠覆性言论）
+- ❌ 金融（金融理财、炒股、投资、荐股）
 - ❌ 虚拟货币/加密货币（crypto、bitcoin、token、ICO、NFT、DeFi）
 - ❌ 智能合约交易（smart contract trading）
 - ❌ 代币/币圈相关（$BTC、$ETH 等带 $ 前缀的标的）
 - ❌ AI Agent 用于交易/炒币的内容
 
-如果某条推文同时包含开源项目和金融内容，**排除该推文**。
+**判断规则**：
+- 推文内容、用户名、头像描述含上述关键词 → 排除
+- 推文同时包含关注主题和过滤内容 → 排除（宁可漏掉不错过）
+- 不确定是否属于过滤类别 → 排除（宁可误杀不可放过）
 
-### 搜索词优化
+### 搜索词优化（仅搜索模式使用）
 
-搜索 OpenClaw 开源项目时，推荐使用精确匹配：
-```
-"openclaw plugin" OR "openclaw skill" OR "openclaw extension" OR "openclaw github" OR "openclaw custom"
-```
-这样比单独搜 `openclaw` 精准得多，能过滤掉大部分商业/金融内容。
+搜索特定主题时，推荐使用精确匹配以过滤噪音：
+- OpenClaw：`"openclaw plugin" OR "openclaw skill" OR "openclaw extension"`
+- AI 绘画：`"AI art" OR "stable diffusion" OR "comfyui" OR "midjourney"`
+- AI 编程：`"AI coding" OR "coding agent" OR "copilot" OR "cursor"`
 
 ## 特殊处理
 
@@ -203,32 +228,39 @@ browser action=snapshot compact=true maxChars=15000 target=host targetId=<tabId>
 
 输出前自检：
 
-1. ✅ 每条推文都有**链接**（`https://x.com/...` 格式）
-2. ✅ 每条推文都有**互动数据**
-3. ✅ 解读是**原创分析**而非简单翻译
-4. ✅ 最多列出 **10 条**，不足 10 条就列实际数量
-5. ✅ 输出使用**中文**
-6. ✅ 结尾加上趋势总结（≥5条时）
+1. ✅ 固定 **10 条**推文（不足 10 条说明实际数量）
+2. ✅ **每条**都有**链接**（`https://x.com/...` 格式）
+3. ✅ **每条**都有**互动数据**
+4. ✅ **每条**都有**深度解读**（不许偷懒只给前几条）
+5. ✅ 解读是**原创分析**而非简单翻译
+6. ✅ 输出使用**中文**
+7. ✅ 结尾加上趋势总结
+8. ✅ 过滤色情/反动/金融/加密货币内容
+9. ✅ 内容不够时滚动加载更多
 
 ## 已知问题和解决方案
 
 | 问题 | 原因 | 解决方案 |
 |------|------|---------|
 | 快照内容为空 | 页面未加载完成 | 增加 wait 时间到 8-10 秒 |
-| 编码乱码（PinchTab） | Windows 编码兼容性 | 改用内置 browser 工具 |
 | 推文被截断 | 页面未完全渲染 | 滚动页面后重新 snapshot |
-| 登录状态问题 | 需要登录才能搜索 | 确保 Twitter 已登录（使用 host browser） |
+| Chrome 连不上 | 未启用远程调试端口 | 用 `--remote-debugging-port=9222` 启动 Chrome |
+| DevToolsActivePort 找不到 | Chrome 没带调试参数启动 | 关闭 Chrome 后重新带参数启动 |
 | 推文数量不足 | 热门推文确实少 | 补充说明"当前热门推文共 X 条" |
 
 ## 触发短语示例
 
-- "看下推特上有什么"
+**推荐首页**：
+- "看看推特"、"推特有什么"
+- "看看 X"、"刷一下推特"
+- "有什么新内容"
+- "看看推荐"
+
+**关键词搜索**：
 - "搜索 Twitter 上的 openclaw"
+- "推特上搜一下 AI 绘画"
+- "帮我搜一下 comfyui"
 - "推特热门推文"
-- "看看 X 上大家在聊什么"
-- "twitter trending"
-- "帮我解读一下这条推文"
-- "搜索推文" + 关键词
 
 ## 扩展用法
 
@@ -246,5 +278,9 @@ browser action=snapshot compact=true maxChars=15000 target=host targetId=<tabId>
 ---
 
 **版本历史**：
+- v1.6 (2026-03-14): 去掉简单列表，直接输出深度解读格式（摘要+数据+链接+解读一体）
+- v1.4 (2026-03-14): 加强过滤规则，新增色情/反动内容过滤
+- v1.3 (2026-03-14): 新增「为你推荐」首页模式为默认浏览方式，关注主题：openclaw/AI/AI绘画/AI编程
+- v1.2 (2026-03-14): 切换到 profile="user" 模式，X 标签页内操作，拆分浏览器规则到 browser-rules.md
 - v1.1 (2026-03-13): 新增搜索偏好与过滤规则（关注开源项目，排除金融/虚拟货币）
 - v1.0 (2026-03-13): 初始版本，基于实际操作经验创建

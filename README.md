@@ -59,16 +59,17 @@ Obsidian 笔记操作技能 - 必须通过 obsidian 命令完成。
 
 ### 5. twitter-trending 🐦
 
-**版本**: 1.1
+**版本**: 1.6
 
-Twitter/X 热门推文搜索与深度解读技能。
+Twitter/X 推文浏览与深度解读技能。
 
 **功能**:
-- 搜索 Twitter/X 热门推文
-- 提取并结构化展示推文内容
-- 中文深度解读
-- OpenClaw 开源项目偏好（插件、技能、GitHub 项目）
-- 自动过滤金融/虚拟货币相关内容
+- 🏠 「为你推荐」首页浏览（默认，利用登录态）
+- 🔍 关键词搜索 / 🕐 最新推文
+- 用户 Chrome 浏览器直连（profile=user，已登录态）
+- 固定 10 条 + 每条深度解读 + 趋势总结
+- 关注主题：OpenClaw、AI、AI 绘画、AI 编程
+- 强制过滤：色情 / 反动 / 金融 / 加密货币
 
 ---
 
@@ -94,6 +95,7 @@ cp -r * ~/.openclaw/workspace/skills/
 
 ## 📝 版本历史
 
+- **2026-03-14** - 更新 twitter-trending v1.6（推荐首页、用户浏览器、过滤增强、拆分 browser-rules.md）
 - **2026-03-13** - 新增 twitter-trending v1.1；删除 pinchtab（已卸载）；更新 force-tool-first v1.6
 - **2026-03-12** - 新增 skill-creator v1.1（支持从对话历史创建）、skill-vetter v1.0；更新 force-tool-first v1.6
 - **2026-03-11** - 添加 pinchtab、skill-creator、skill-vetter
